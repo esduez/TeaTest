@@ -8,12 +8,12 @@ import (
 func main() {
 	cmd := &cobra.Command{
 		Use:   "teatest",
-		Short: "TeaTest Package Manager",
+		Short: "TeaTest CLI",
 	}
-
+	
 	cmd.AddCommand(commands.NewInstallCmd())
-	cmd.AddCommand(commands.NewListCmd())
-
+	cmd.AddCommand(commands.NewSchedulerCmd())
+	
 	if err := cmd.Execute(); err != nil {
 		panic(err)
 	}
