@@ -3,12 +3,17 @@ package downloader
 import (
 	"crypto/sha256"
 	"encoding/hex"
+	"errors"
 	"io"
 	"os"
 )
 
-func VerifyFile(path, expectedHash string) error {
-	file, err := os.Open(path)
+var (
+	ErrChecksumMismatch = errors.New("checksum does not match")
+)
+
+func VerifyFile(filePath, expectedHash string) error {
+	file, err := os.Open(filePath)
 	if err != nil {
 		return err
 	}
@@ -21,7 +26,7 @@ func VerifyFile(path, expectedHash string) error {
 
 	actualHash := hex.EncodeToString(hasher.Sum(nil))
 	if actualHash != expectedHash {
-		return fmt.Errorf("checksum uyumsuz: beklenen %s, alınan %s", expectedHash, actualHash)
+		return ErrChecksumMismatch
 	}
 	return nil
 }
