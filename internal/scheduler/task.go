@@ -1,25 +1,19 @@
 package scheduler
 
 import (
-	"fmt"
 	"os/exec"
 	"runtime"
 )
 
-func RegisterAutoUpdateTask() error {
+func RegisterAutoUpdate() error {
 	if runtime.GOOS != "windows" {
-		return fmt.Errorf("scheduler only supported on Windows")
+		return nil // Sadece Windows'ta çalışır
 	}
 
 	cmd := exec.Command("powershell", "-Command", `
 		$action = New-ScheduledTaskAction -Execute "$env:APPDATA\teatest\teatest.exe" -Argument "update --silent"
 		$trigger = New-ScheduledTaskTrigger -Daily -At 3am
-		$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -DontStopOnIdleEnd
-		Register-ScheduledTask -TaskName "TeaTestAutoUpdater" -Action $action -Trigger $trigger -Settings $settings -RunLevel Highest -Force
+		Register-ScheduledTask -TaskName "TeaTestAutoUpdate" -Action $action -Trigger $trigger -RunLevel Highest
 	`)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		return fmt.Errorf("failed to register task: %s - %v", string(output), err)
-	}
-	return nil
+	return cmd.Run()
 }
