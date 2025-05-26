@@ -25,10 +25,12 @@ jobs:
 
     - name: Initialize Go Modules
       run: |
-        # Sadece go.mod yoksa init yap
-        if [ ! -f go.mod ]; then
-          go mod init github.com/esduez/TeaTest
+        # Temizlik ve güvenli modül yükleme
+        go clean -modcache
+        if [ -f go.sum ]; then
+          rm go.sum
         fi
+        go mod init github.com/esduez/TeaTest
         go mod tidy
         go mod download
         go mod verify
@@ -82,9 +84,10 @@ jobs:
       with:
         files: |
           release/teatest
+          release/checksums.txt
         body: |
           ### TeaTest ${{ github.ref_name }}
-          - Compiled binary attached
-          - NPM package published
+          - Compiled binaries for all platforms
+          - SHA256 checksums verified
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
