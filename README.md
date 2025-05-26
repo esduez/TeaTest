@@ -1,16 +1,24 @@
 # TeaTest 🍵
 
-Modern Paket Yönetim Sistemi
+Modern, cross-platform package manager built with Go. Manage dependencies effortlessly across Linux, macOS, and Windows.
 
-## Özellikler
-- ✔️ Güvenli paket indirme (SHA256 checksum)
-- ✔️ Windows servis desteği
-- ✔️ Otomatik güncellemeler
+[![GitHub Release](https://img.shields.io/github/v/release/esduez/TeaTest)](https://github.com/esduez/TeaTest/releases)
+[![NPM Version](https://img.shields.io/npm/v/teatest)](https://www.npmjs.com/package/teatest)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-## Kurulum
-```sh
-# Linux/macOS
-curl -fsSL https://install.teatest.dev | bash
+<p align="center">
+  <img src="https://user-images.githubusercontent.com/.../teatest-demo.gif" width="600" alt="TeaTest Demo">
+</p>
 
-# Windows
-iwr -useb https://install.teatest.dev/win | iex
+## 🌟 Features
+- ✅ **One-command installation**
+- 🔒 **SHA256 checksum verification**
+- 🖥️ **Cross-platform support** (Linux/macOS/Windows)
+- ⚡ **Fast dependency resolution**
+- 📦 **NPM integration**
+
+## 🚀 Installation
+
+### Method 1: NPM (Recommended)
+```bash
+npm install -g teatest
