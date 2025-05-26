@@ -1,26 +1,35 @@
 package downloader
 
 import (
-	"fmt"
+	"crypto/sha256"
+	"encoding/hex"
 	"io"
-	"net/http"
 	"os"
 )
 
-func DownloadPackage(pkg string) error {
-	url := GetPackageURL(pkg)
-	resp, err := http.Get(url)
+func GenerateChecksum(filePath string) (string, error) {
+	file, err := os.Open(filePath)
 	if err != nil {
-		return fmt.Errorf("indirme hatası: %v", err)
+		return "", err
 	}
-	defer resp.Body.Close()
+	defer file.Close()
 
-	out, err := os.Create(fmt.Sprintf("./packages/%s.zip", pkg))
+	hasher := sha256.New()
+	if _, err := io.Copy(hasher, file); err != nil {
+		return "", err
+	}
+
+	return hex.EncodeToString(hasher.Sum(nil)), nil
+}
+
+func VerifyChecksum(filePath, expectedHash string) error {
+	actualHash, err := GenerateChecksum(filePath)
 	if err != nil {
 		return err
 	}
-	defer out.Close()
 
-	_, err = io.Copy(out, resp.Body)
-	return err
+	if actualHash != expectedHash {
+		return ErrChecksumMismatch
+	}
+	return nil
 }
