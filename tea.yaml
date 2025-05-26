@@ -1,0 +1,8 @@
+name: teatest
+version: 1.0.0
+code_owner: "0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c"
+
+dependencies:
+  - name: tealang
+    version: "^1.2.0"
+    checksum: "a1b2c3d4..."  # SHA256
