@@ -1,35 +1,67 @@
 <#
 .SYNOPSIS
-TeaTest Servis Yöneticisi v2.2
+TeaTest Windows Service Manager v2.3
 #>
 
 param(
-    [ValidateSet("install","uninstall","start","stop")]
+    [ValidateSet("install", "uninstall", "start", "stop", "status")]
     [string]$Action = "install"
 )
 
-# Log ayarları
-$logDir = "$env:APPDATA\teatest\logs"
-New-Item -ItemType Directory -Force -Path $logDir | Out-Null
-Start-Transcript -Path "$logDir\service_$(Get-Date -Format 'yyyyMMdd').log" -Append
+$ErrorActionPreference = "Stop"
 
-# Servis işlemleri
+# Configuration
+$serviceName = "TeaTestDaemon"
+$logDir = "$env:APPDATA\teatest\logs"
+$logFile = "$logDir\service_$(Get-Date -Format 'yyyyMMdd').log"
+
+# Ensure directories exist
+New-Item -ItemType Directory -Force -Path $logDir | Out-Null
+Start-Transcript -Path $logFile -Append
+
+function Get-ServiceStatus {
+    try {
+        $status = (Get-Service $serviceName -ErrorAction Stop).Status
+        Write-Host "Service status: $status" -ForegroundColor Cyan
+        return $status
+    } catch {
+        Write-Host "Service not installed" -ForegroundColor Yellow
+        return $null
+    }
+}
+
 switch ($Action) {
     "install" {
-        New-Service -Name "TeaTestDaemon" `
+        if (Get-ServiceStatus) {
+            Write-Host "Service already exists" -ForegroundColor Yellow
+            break
+        }
+
+        New-Service -Name $serviceName `
                    -BinaryPathName "$env:APPDATA\teatest\teatest.exe run --daemon" `
-                   -DisplayName "TeaTest Arka Plan Servisi" `
-                   -StartupType Automatic
-        Start-Service "TeaTestDaemon"
-        Write-Host "✅ Servis kuruldu ve başlatıldı" -ForegroundColor Green
+                   -DisplayName "TeaTest Background Service" `
+                   -StartupType Automatic `
+                   -Description "TeaTest package manager background service"
+
+        Start-Service $serviceName
+        Write-Host "✅ Service installed and started" -ForegroundColor Green
     }
+    
     "uninstall" {
-        Stop-Service "TeaTestDaemon" -Force
-        sc.exe delete "TeaTestDaemon"
-        Write-Host "✅ Servis kaldırıldı" -ForegroundColor Yellow
+        $status = Get-ServiceStatus
+        if ($status -eq "Running") {
+            Stop-Service $serviceName -Force
+        }
+        
+        if ($status) {
+            sc.exe delete $serviceName
+            Write-Host "✅ Service uninstalled" -ForegroundColor Green
+        }
     }
-    "start" { Start-Service "TeaTestDaemon" }
-    "stop" { Stop-Service "TeaTestDaemon" }
+    
+    "start" { Start-Service $serviceName }
+    "stop" { Stop-Service $serviceName }
+    "status" { Get-ServiceStatus }
 }
 
 Stop-Transcript
