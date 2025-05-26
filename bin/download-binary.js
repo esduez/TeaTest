@@ -2,24 +2,33 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const os = require('os');
 const axios = require('axios');
 const tar = require('tar');
-const os = require('os');
+
+// Platform detection
+const platformMap = {
+  win32: 'windows',
+  darwin: 'macos',
+  linux: 'linux'
+};
+const platform = platformMap[os.platform()] || os.platform();
+const binaryName = `teatest-${platform}${platform === 'windows' ? '.exe' : ''}`;
+const binDir = path.join(__dirname, '..', 'bin');
 
 async function downloadBinary() {
-  const version = require('../package.json').version;
-  const platform = os.platform() === 'win32' ? 'windows' : os.platform();
-  const binaryName = `teatest-${platform}-amd64${platform === 'windows' ? '.exe' : ''}`;
-  const tarUrl = `https://github.com/esduez/TeaTest/releases/download/v${version}/teatest-${platform}.tar.gz`;
-  const binDir = path.join(__dirname, '..', 'bin');
-
-  if (!fs.existsSync(binDir)) {
-    fs.mkdirSync(binDir, { recursive: true });
-  }
-
-  console.log(`📦 Downloading TeaTest binary (v${version}) for ${platform}...`);
-  
   try {
+    const version = require('../package.json').version;
+    const tarUrl = `https://github.com/esduez/TeaTest/releases/download/v${version}/teatest-${platform}.tar.gz`;
+
+    console.log(`📦 Downloading TeaTest v${version} for ${platform}...`);
+
+    // Create bin directory if not exists
+    if (!fs.existsSync(binDir)) {
+      fs.mkdirSync(binDir, { recursive: true });
+    }
+
+    // Download and extract
     const response = await axios.get(tarUrl, { responseType: 'stream' });
     await new Promise((resolve, reject) => {
       response.data
@@ -28,13 +37,21 @@ async function downloadBinary() {
         .on('error', reject);
     });
 
-    // İzinleri ayarla
-    fs.chmodSync(path.join(binDir, binaryName), 0o755);
-    console.log('✅ Binary downloaded successfully');
+    // Verify binary exists
+    const binaryPath = path.join(binDir, binaryName);
+    if (!fs.existsSync(binaryPath)) {
+      throw new Error(`Downloaded binary not found at ${binaryPath}`);
+    }
+
+    // Set executable permissions
+    fs.chmodSync(binaryPath, 0o755);
+    console.log('✅ Binary ready at:', binaryPath);
+
   } catch (error) {
     console.error('❌ Download failed:', error.message);
     process.exit(1);
   }
 }
 
-downloadBinary();
+// Run with error handling
+downloadBinary().catch(console.error);
