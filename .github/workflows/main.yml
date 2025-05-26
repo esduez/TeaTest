@@ -1,10 +1,11 @@
-name: TeaTest CI/CD
+name: TeaTest CI/CD Pipeline
 
 on:
   push:
-    branches: ["main"]
+    branches: [ "main" ]
   pull_request:
-    branches: ["main"]
+    branches: [ "main" ]
+  workflow_dispatch:
 
 env:
   GO_VERSION: '1.21'
@@ -24,8 +25,13 @@ jobs:
 
     - name: Initialize Go Modules
       run: |
+        # Sadece go.mod yoksa init yap
+        if [ ! -f go.mod ]; then
+          go mod init github.com/esduez/TeaTest
+        fi
         go mod tidy
         go mod download
+        go mod verify
 
   build:
     needs: setup
@@ -33,7 +39,12 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Build
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: ${{ env.GO_VERSION }}
+
+    - name: Build Binary
       run: |
         go build -v -o teatest .
         mkdir -p release
@@ -45,7 +56,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    - name: Run tests
+    - name: Run Unit Tests
       run: go test -v ./...
 
   release:
@@ -60,6 +71,20 @@ jobs:
         node-version: ${{ env.NODE_VERSION }}
     
     - name: Publish to NPM
-      run: npm publish
+      run: |
+        npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
+        npm publish
       env:
         NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          release/teatest
+        body: |
+          ### TeaTest ${{ github.ref_name }}
+          - Compiled binary attached
+          - NPM package published
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
