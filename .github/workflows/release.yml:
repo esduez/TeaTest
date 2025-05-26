@@ -1,23 +1,105 @@
-name: Release Build
+name: Release Build and Publish
 
 on:
   push:
-    tags: ['v*.*.*']
+    tags: ['v*.*.*']  # v1.0.0 gibi semver tagları tetikler
+  workflow_dispatch:  # Manuel tetikleme seçeneği
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Tag geçmişi için gerekli
+
+      - name: Set up Go
+        uses: actions/setup-go@v4
         with:
           go-version: '1.21'
-      - run: |
-          chmod +x build/release.sh
-          ./build/release.sh
-      - uses: actions/upload-artifact@v3
+
+      - name: Build binaries
+        run: |
+          mkdir -p release
+          export VERSION=${GITHUB_REF#refs/tags/v}
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+          
+          # Çapraz derleme
+          GOOS=linux GOARCH=amd64 go build -ldflags "-X main.version=$VERSION" -o release/teatest-$VERSION-linux-amd64
+          GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=$VERSION" -o release/teatest-$VERSION-darwin-arm64
+          GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=$VERSION" -o release/teatest-$VERSION-windows-amd64.exe
+
+      - name: Generate checksums
+        run: |
+          cd release
+          sha256sum * > checksums.txt
+
+      - name: Prepare npm assets
+        run: |
+          mkdir -p npm-packages
+          tar czf npm-packages/teatest-linux.tar.gz -C release teatest-${{ env.VERSION }}-linux-amd64
+          tar czf npm-packages/teatest-darwin.tar.gz -C release teatest-${{ env.VERSION }}-darwin-arm64
+          tar czf npm-packages/teatest-windows.tar.gz -C release teatest-${{ env.VERSION }}-windows-amd64.exe
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v3
         with:
-          name: teatest-binaries
+          name: release-assets
           path: |
             release/*
-            !release/*.sha256
+            npm-packages/*
+
+  publish-npm:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: release-assets
+          path: dist
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Prepare package.json
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "Updating version to $VERSION"
+          npm version $VERSION --no-git-tag-version
+          cp dist/checksums.txt .
+
+      - name: Publish to npm
+        run: npm publish
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+  create-release:
+    needs: [build, publish-npm]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          name: release-assets
+          path: release
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            release/*
+          body: |
+            ### TeaTest ${{ github.ref_name }}
+            - Cross-platform binaries
+            - NPM package available
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
