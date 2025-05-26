@@ -7,7 +7,6 @@ import (
 	"os"
 )
 
-// GenerateChecksum generates SHA256 hash for a file
 func GenerateChecksum(filePath string) (string, error) {
 	file, err := os.Open(filePath)
 	if err != nil {
@@ -21,4 +20,16 @@ func GenerateChecksum(filePath string) (string, error) {
 	}
 
 	return hex.EncodeToString(hasher.Sum(nil)), nil
+}
+
+func VerifyChecksum(filePath, expectedHash string) error {
+	actualHash, err := GenerateChecksum(filePath)
+	if err != nil {
+		return err
+	}
+
+	if actualHash != expectedHash {
+		return ErrChecksumMismatch
+	}
+	return nil
 }
