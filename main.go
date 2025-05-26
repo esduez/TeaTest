@@ -1,13 +1,20 @@
 package main
 
 import (
-	"os"
-	"teatest/internal/commands"
+	"github.com/esduez/TeaTest/internal/commands"
+	"github.com/spf13/cobra"
 )
 
 func main() {
-	cmd := commands.NewRootCmd()
+	cmd := &cobra.Command{
+		Use:   "teatest",
+		Short: "TeaTest Package Manager",
+	}
+
+	cmd.AddCommand(commands.NewInstallCmd())
+	cmd.AddCommand(commands.NewListCmd())
+
 	if err := cmd.Execute(); err != nil {
-		os.Exit(1)
+		panic(err)
 	}
 }
