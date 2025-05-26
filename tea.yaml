@@ -4,11 +4,5 @@ code_owner: "0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c"
 
 dependencies:
   - name: tealang
-    version: "^1.2.0"
-    source: github.com/tealang/tealang
-    checksum: "a1b2c3d4e5f6..." # SHA256 hash
-
-commands:
-  install:
-    description: "Install packages"
-    script: ./scripts/install.sh
+    version: "1.2.0"  # Semver formatında olmalı
+    checksum: "a1b2c3..." 
