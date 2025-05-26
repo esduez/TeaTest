@@ -6,8 +6,8 @@ on:
   workflow_dispatch:
 
 env:
-  NODE_VERSION: '18'
   GO_VERSION: '1.21'
+  NODE_VERSION: '18'
 
 jobs:
   build:
@@ -30,15 +30,26 @@ jobs:
           GOOS=darwin GOARCH=arm64 go build -ldflags "-X main.version=$VERSION" -o release/teatest-darwin
           GOOS=windows GOARCH=amd64 go build -ldflags "-X main.version=$VERSION" -o release/teatest-windows.exe
 
+      - name: Generate checksums
+        run: |
+          cd release
+          sha256sum * > checksums.txt
+
+      - name: Verify checksums
+        run: |
+          cd release
+          sha256sum -c checksums.txt
+
       - name: Prepare npm packages
         run: |
           mkdir -p npm-packages
-          tar czf npm-packages/teatest-linux.tar.gz -C release teatest-linux
-          tar czf npm-packages/teatest-darwin.tar.gz -C release teatest-darwin
-          tar czf npm-packages/teatest-windows.tar.gz -C release teatest-windows.exe
+          for platform in linux darwin windows; do
+            cp release/teatest-$platform* release/teatest
+            tar czf npm-packages/teatest-$platform.tar.gz -C release teatest
+            rm release/teatest
+          done
 
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v3
         with:
           name: release-assets
           path: |
@@ -67,5 +78,3 @@ jobs:
         run: |
           npm config set //registry.npmjs.org/:_authToken=${{ secrets.NPM_TOKEN }}
           npm publish
-        env:
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
