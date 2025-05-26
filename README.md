@@ -22,3 +22,13 @@ Modern, cross-platform package manager built with Go. Manage dependencies effort
 ### Method 1: NPM (Recommended)
 ```bash
 npm install -g teatest
+
+### Method 2: Direct Binary Download
+
+# Linux/macOS
+
+curl -L https://github.com/esduez/TeaTest/releases/latest/download/teatest-$(uname -s | tr '[:upper:]' '[:lower:]') -o /usr/local/bin/teatest
+chmod +x /usr/local/bin/teatest
+
+# Windows (PowerShell)
+iwr -useb https://github.com/esduez/TeaTest/releases/latest/download/teatest-windows.exe -OutFile $env:APPDATA\teatest\teatest.exe
