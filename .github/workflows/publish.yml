@@ -1,0 +1,11 @@
+name: Publish to Tea.xyz
+on: [push]
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - run: curl -fsS https://tea.xyz/install.sh | sh
+      - run: tea publish
+        env:
+          TEA_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
