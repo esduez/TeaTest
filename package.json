@@ -1,6 +1,6 @@
 {
   "name": "teatest",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "type": "module",
   "description": "Tea.xyz uyumlu NPM tabanlı paket yöneticisi",
   "main": "lib/index.js",
@@ -10,8 +10,9 @@
   "scripts": {
     "start": "node .",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "postinstall": "node lib/utils/setup.js && export PATH=\"$HOME/.tea/tea.xyz/v*/bin:$PATH\"",
-    "prepare": "node lib/utils/setup.js"
+    "postinstall": "export PATH=\"$HOME/.tea/tea.xyz/v*/bin:$PATH\" && (tea -v || sh -c \"$(curl -fsSL https://tea.xyz/install.sh)\")",
+    "prepare": "node lib/utils/setup.js",
+    "tea-publish": "tea publish"
   },
   "keywords": [
     "tea-xyz",
@@ -29,7 +30,8 @@
     "yaml": "^2.3.4"
   },
   "devDependencies": {
-    "jest": "^29.7.0"
+    "jest": "^29.7.0",
+    "child_process": "^1.0.2"
   },
   "tea": {
     "type": "cli",
@@ -55,9 +57,14 @@
   "files": [
     "bin/",
     "lib/",
-    "tea.yml"
+    "tea.yml",
+    ".github/"
   ],
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "registry": "https://registry.tea.xyz"
+  },
+  "config": {
+    "teaPath": "$HOME/.tea/tea.xyz/v*/bin"
   }
 }
