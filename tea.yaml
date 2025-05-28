@@ -1,8 +1,10 @@
-name: teatest
-version: 1.0.0
-code_owner: "0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c"
-
+# tea.yml (Güncellenmiş)
+ovner: 0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c
+env:
+  - NODE_ENV=production
 dependencies:
-  - name: tealang
-    version: "1.2.0"  # Semver formatında olmalı
-    checksum: "a1b2c3..." 
+  - npm:lodash@latest
+  - npm:express@4.x
+repositories:
+  - type: npm
+    url: https://registry.npmjs.org/
