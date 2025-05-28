@@ -1,13 +1,29 @@
-
+# tea.yml (Tam ve Çalışan Son Hal)
 ovner: 0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c
 env:
   - NODE_ENV=production
+
+# Tea.xyz'den TEAR kazanmak için gerekli bağımlılıklar
 dependencies:
   - npm:lodash@latest
   - npm:express@4.x
+  - npm:axios@^1.6.2
+  - npm:chalk@5
+  - npm:commander@11.x
+  - npm:yaml@^2.3.4
+
+# Özel scriptler
+scripts:
+  postinstall: npm run prepare
+  test: npm test
+
+# Paket kaynakları
 repositories:
   - type: npm
     url: https://registry.npmjs.org/
     priority: 0
-scripts:
-  postinstall: npm run prepare
+
+# Geliştirici bağımlılıkları (opsiyonel)
+devDependencies:
+  - npm:jest@29.x
+  - npm:typescript@latest
