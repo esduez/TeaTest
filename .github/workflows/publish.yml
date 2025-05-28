@@ -4,8 +4,12 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - run: curl -fsS https://tea.xyz/install.sh | sh
-      - run: tea publish
+      - uses: actions/checkout@v4
+      - name: Install tea
+        run: |
+          curl -fsS https://tea.xyz/install.sh | sh
+          echo "$HOME/.tea/tea.xyz/v*/bin" >> $GITHUB_PATH
+      - name: Publish
+        run: tea publish
         env:
           TEA_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
