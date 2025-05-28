@@ -9,7 +9,7 @@
   "scripts": {
     "start": "node .",
     "test": "jest",
-    "postinstall": "tea -v || curl -fsS https://tea.xyz/install.sh | sh"  // Tea.xyz otomatik kurulum
+    "postinstall": "tea -v || curl -fsS https://tea.xyz/install.sh | sh"  
   },
   "keywords": ["tea-xyz", "package-manager", "npm"],
   "author": "0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c",
