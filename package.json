@@ -1,6 +1,6 @@
 {
   "name": "teatest",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "type": "module",
   "description": "Tea.xyz uyumlu NPM tabanlı paket yöneticisi",
   "main": "lib/index.js",
@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "node .",
-    "test": "jest",
+    "test": "NODE_OPTIONS=--experimental-vm-modules jest",
     "postinstall": "tea -v || curl -fsS https://tea.xyz/install.sh | sh",
     "prepare": "node lib/utils/setup.js"
   },
@@ -43,7 +43,10 @@
     },
     "repository": {
       "type": "git",
-      "url": "https://github.com/esduez/TeaTest.git"
+      "url": "git+https://github.com/esduez/TeaTest.git"
+    },
+    "binaries": {
+      "teat": "./bin/teat"
     }
   },
   "engines": {
@@ -53,5 +56,8 @@
     "bin/",
     "lib/",
     "tea.yml"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
 }
