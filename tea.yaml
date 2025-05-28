@@ -1,4 +1,3 @@
-# tea.yml (Güncellenmiş)
 ovner: 0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c
 env:
   - NODE_ENV=production
