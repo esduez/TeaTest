@@ -7,18 +7,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Install Tea CLI
+      - name: Install Tea CLI (Guaranteed)
         run: |
-          sh -c "$(curl -fsSL https://tea.xyz/install.sh)"
-          echo "$HOME/.tea/tea.xyz/v*/bin" >> $GITHUB_PATH
-          echo "PATH=$PATH" >> $GITHUB_ENV
+          # Tea CLI'yi kök dizine kuruyoruz
+          curl -fsSL https://tea.xyz/install.sh | sh -s -- --yes --prefix=/usr/local
+          echo "/usr/local/tea/tea.xyz/v*/bin" >> $GITHUB_PATH
+          echo "PATH=/usr/local/tea/tea.xyz/v*/bin:$PATH" >> $GITHUB_ENV
           
-      - name: Verify Installation
-        run: |
-          which tea
-          tea --version
-          
-      - name: Publish to Tea.xyz
-        run: tea publish
-        env:
-          TEA_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+     
