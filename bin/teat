@@ -1,3 +1,6 @@
-#!/usr/bin/env node
 
-require('../lib/index');
+#!/usr/bin/env node
+import('../lib/index.js').catch(e => {
+  console.error('Failed to start:', e);
+  process.exit(1);
+});
