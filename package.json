@@ -1,15 +1,25 @@
 {
   "name": "teatest",
   "version": "1.0.0",
-  "description": "TeaTest Package Manager",
+  "description": "NPM tabanlı basit paket yöneticisi",
+  "main": "lib/index.js",
   "bin": {
-    "teatest": "./bin/teatest.js"
+    "teat": "./bin/teat"
   },
   "scripts": {
-    "postinstall": "node ./bin/download-binary.js"
+    "start": "node .",
+    "test": "jest"
   },
+  "keywords": ["package", "manager", "npm"],
+  "author": "0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c",
+  "license": "MIT",
   "dependencies": {
-    "axios": "^1.6.2",
-    "tar": "^6.2.1"
+    "chalk": "^4.1.2",
+    "commander": "^9.4.1",
+    "fs-extra": "^10.1.0",
+    "axios": "^1.2.0"
+  },
+  "devDependencies": {
+    "jest": "^29.3.1"
   }
 }
