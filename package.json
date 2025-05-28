@@ -1,6 +1,6 @@
 {
   "name": "teatest",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "type": "module",
   "description": "Tea.xyz uyumlu NPM tabanlı paket yöneticisi",
   "main": "lib/index.js",
@@ -10,7 +10,7 @@
   "scripts": {
     "start": "node .",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "postinstall": "tea -v || curl -fsS https://tea.xyz/install.sh | sh",
+    "postinstall": "node lib/utils/setup.js && export PATH=\"$HOME/.tea/tea.xyz/v*/bin:$PATH\"",
     "prepare": "node lib/utils/setup.js"
   },
   "keywords": [
