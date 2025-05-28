@@ -1,3 +1,4 @@
+
 ovner: 0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c
 env:
   - NODE_ENV=production
@@ -7,3 +8,6 @@ dependencies:
 repositories:
   - type: npm
     url: https://registry.npmjs.org/
+    priority: 0
+scripts:
+  postinstall: npm run prepare
