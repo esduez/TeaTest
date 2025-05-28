@@ -1,6 +1,6 @@
 {
   "name": "teatest",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "type": "module",
   "description": "Tea.xyz uyumlu NPM tabanlı paket yöneticisi",
   "main": "lib/index.js",
@@ -10,9 +10,10 @@
   "scripts": {
     "start": "node .",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest",
-    "postinstall": "export PATH=\"$HOME/.tea/tea.xyz/v*/bin:$PATH\" && (tea -v || sh -c \"$(curl -fsSL https://tea.xyz/install.sh)\")",
+    "postinstall": "/usr/local/tea/tea.xyz/v*/bin/tea --version || (curl -fsSL https://tea.xyz/install.sh | sh -s -- --yes --prefix=/usr/local)",
     "prepare": "node lib/utils/setup.js",
-    "tea-publish": "tea publish"
+    "tea-publish": "/usr/local/tea/tea.xyz/v*/bin/tea publish",
+    "tea-install": "curl -fsSL https://tea.xyz/install.sh | sh -s -- --yes --prefix=/usr/local"
   },
   "keywords": [
     "tea-xyz",
@@ -52,19 +53,29 @@
     }
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": ">=18.0.0",
+    "tea": ">=0.25.0"
   },
   "files": [
     "bin/",
     "lib/",
     "tea.yml",
-    ".github/"
+    ".github/",
+    "README.md"
   ],
   "publishConfig": {
     "access": "public",
     "registry": "https://registry.tea.xyz"
   },
   "config": {
-    "teaPath": "$HOME/.tea/tea.xyz/v*/bin"
-  }
+    "teaPath": "/usr/local/tea/tea.xyz/v*/bin"
+  },
+  "os": [
+    "linux",
+    "darwin"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ]
 }
