@@ -1,15 +1,24 @@
 name: Publish to Tea.xyz
 on: [push]
+
 jobs:
   publish:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install tea
+      
+      - name: Install Tea CLI
         run: |
-          curl -fsS https://tea.xyz/install.sh | sh
+          sh -c "$(curl -fsSL https://tea.xyz/install.sh)"
           echo "$HOME/.tea/tea.xyz/v*/bin" >> $GITHUB_PATH
-      - name: Publish
+          echo "PATH=$PATH" >> $GITHUB_ENV
+          
+      - name: Verify Installation
+        run: |
+          which tea
+          tea --version
+          
+      - name: Publish to Tea.xyz
         run: tea publish
         env:
           TEA_GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
