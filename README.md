@@ -9,7 +9,7 @@
 ## Özellikler ✨
 - Tea.xyz protokolü ile entegre
 - Otomatik bağımlılık yönetimi
-- Ethereum cüzdan entegrasyonu (`0x4265FCDeE267cE15fC493af9967DD5F05EB1Bd1c`)
+- Ethereum cüzdan entegrasyonu 
 
 ## Kurulum 🔧
 ```bash
